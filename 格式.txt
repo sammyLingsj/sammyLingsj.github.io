@@ -1,0 +1,8 @@
+---
+title: SCTF2023
+author: s4mmy
+banner_img: /img/SCTF2023/luo.png
+index_img: /img/SCTF2023/luo.png
+---
+
+<meta name="referrer" content="no-referrer" />
